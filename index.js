@@ -33,9 +33,7 @@ var server = http.createServer((req, res) => {
 
     // choose the handler this request sould go to
     var choosenHandler =
-      typeof router[trimedPath] !== undefined
-        ? router[trimedPath]
-        : handlers.notFound;
+      router[trimedPath] !== undefined ? router[trimedPath] : handlers.notFound;
 
     var data = {
       trimedPath: trimedPath,
