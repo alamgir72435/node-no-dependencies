@@ -2,6 +2,7 @@
 var http = require("http");
 var url = require("url");
 var StringDecoder = require("string_decoder").StringDecoder;
+var config = require("./config");
 // The server should respond to all request with a string
 var server = http.createServer((req, res) => {
   // Get  the url and parse it
@@ -53,6 +54,7 @@ var server = http.createServer((req, res) => {
       var payloadString = JSON.stringify(payload);
 
       //   return the response
+      res.setHeader("Content-Type", "application/json");
       res.writeHead(statusCode);
       res.end(payloadString);
       console.log("returning this response", statusCode, payloadString);
@@ -61,7 +63,11 @@ var server = http.createServer((req, res) => {
 });
 
 // start the server
-server.listen(3000, () => console.log("Server Start on port 3000"));
+server.listen(config.port, () =>
+  console.log(
+    "Server Start on port " + config.port + " in " + config.envName + " now"
+  )
+);
 
 // degine the handlers
 var handlers = {};
