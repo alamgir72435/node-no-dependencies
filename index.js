@@ -1,10 +1,55 @@
 // Dependencies
+// openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
+// for ssl generate
 var http = require("http");
+var https = require("https");
 var url = require("url");
 var StringDecoder = require("string_decoder").StringDecoder;
 var config = require("./config");
+var fs = require("fs");
+var _data = require("./lib/data");
+
+//Testing
+// @TODO delete this
+// _data.create("test", "newFile", { name: "saif" }, (err) => {
+//   console.log(err);
+// });
+
 // The server should respond to all request with a string
-var server = http.createServer((req, res) => {
+// instantiate the server
+var httpServer = http.createServer((req, res) => {
+  unifiedServer(req, res);
+});
+
+// start the server
+httpServer.listen(config.httpPort, () =>
+  console.log(
+    "Server Start on port " + config.httpPort + " in " + config.envName + " now"
+  )
+);
+
+// instantiate the https server
+var httpsServerOptions = {
+  key: fs.readFileSync("./https/key.pem"),
+  cert: fs.readFileSync("./https/cert.pem"),
+};
+var httpsServer = https.createServer(httpsServerOptions, (req, res) => {
+  unifiedServer(req, res);
+});
+
+// start the HTTPS server
+httpsServer.listen(config.httpsPort, () =>
+  console.log(
+    "Server Start on port " +
+      config.httpsPort +
+      " in " +
+      config.envName +
+      " now"
+  )
+);
+
+// All the server login for boh http and https server
+var unifiedServer = (req, res) => {
   // Get  the url and parse it
   var parsedUrl = url.parse(req.url, true);
 
@@ -60,21 +105,15 @@ var server = http.createServer((req, res) => {
       console.log("returning this response", statusCode, payloadString);
     });
   });
-});
-
-// start the server
-server.listen(config.port, () =>
-  console.log(
-    "Server Start on port " + config.port + " in " + config.envName + " now"
-  )
-);
+};
 
 // degine the handlers
 var handlers = {};
 
-handlers.sample = (data, callback) => {
+handlers.ping = (data, callback) => {
   // callback a http status code, and a payload object
-  callback(406, { name: "sample Handler" });
+
+  callback(200);
 };
 
 // Not found Handler
@@ -85,5 +124,5 @@ handlers.notFound = (data, callback) => {
 
 // Define a request router
 var router = {
-  sample: handlers.sample,
+  ping: handlers.ping,
 };
