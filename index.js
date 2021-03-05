@@ -22,7 +22,7 @@ var server = http.createServer((req, res) => {
   // get the headers as an Object
   var headers = req.headers;
 
-  // Get the  payload
+  // Get the  payloads
   var decoder = new StringDecoder("utf-8");
   var buffer = "";
   req.on("data", (data) => {
